@@ -1,3 +1,3 @@
-# spring-boot todo
+# spring-boot-todo
 
-jpa
+* 학습목적으로 Strpingboot, jpa를 사용한 Todo API
