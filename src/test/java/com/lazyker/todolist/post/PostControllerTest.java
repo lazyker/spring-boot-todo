@@ -13,10 +13,14 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
 
+import static java.util.Arrays.asList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,16 +40,52 @@ public class PostControllerTest {
     @Test
     public void savePost() throws Exception {
         given(this.postService.save(any(Post.class)))
-                .willReturn(new Post(1L, "1. 블로그 작성", "Spring 기본원리", new Date()));
+                .willReturn(new Post(1L, "1. 제목", "JPA 어렵다..", new Date()));
 
         this.mockMvc.perform(post("/posts")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"subject\" : \"블로그 작성\", \"content\" : \"Spring 기본원리\"}"))
+                .content("{\"subject\" : \"제목\", \"content\" : \"JPA 어렵다..\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("1"))
-                .andExpect(jsonPath("$.subject").value("1. 블로그 작성"))
-                .andExpect(jsonPath("$.content").value("Spring 기본원리"))
+                .andExpect(jsonPath("$.subject").value("1. 제목"))
+                .andExpect(jsonPath("$.content").value("JPA 어렵다.."))
                 .andDo(print());
     }
 
+    @Test
+    public void findAllPost() throws Exception {
+        Post post1 = new Post(1L, "제목1", "JPA 어렵다..", new Date());
+        Post post2 = new Post(2L, "제목2", "JAVA 이제 못하겠네", new Date());
+
+        given(this.postService.findAllPost())
+                .willReturn(asList(post1, post2));
+
+        this.mockMvc.perform(get("/posts"))
+                .andExpect(jsonPath("$.size()").value(2))
+                .andDo(print());
+    }
+
+    @Test
+    public void updatePost() throws Exception {
+        given(this.postService.updatePost(any(Post.class)))
+                .willReturn(new Post(1L, "1. 제목", "JPA 어렵다..", new Date()));
+
+        this.mockMvc.perform(put("/posts/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"subject\" : \"제목\", \"content\" : \"JPA 어렵다..\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.subject").value("1. 제목"))
+                .andExpect(jsonPath("$.content").value("JPA 어렵다.."))
+                .andDo(print());
+    }
+
+    @Test
+    public void updatePost_subject가_없는_경우() throws Exception {
+        this.mockMvc.perform(put("/posts/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"subject\" : \"\", \"content\" : \"JPA 어렵다..\"}"))
+                .andExpect(status().isBadRequest());
+
+    }
 }

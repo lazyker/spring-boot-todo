@@ -2,12 +2,14 @@ package com.lazyker.todolist.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Data
+//@NoArgsConstructor
 @AllArgsConstructor
 public class Post {
     @Id

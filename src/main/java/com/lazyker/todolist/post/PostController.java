@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/posts")
@@ -28,6 +31,27 @@ public class PostController {
 
 //        return this.postService.save(postDto);
         return this.postService.save(this.modelmapper.map(postDto, Post.class));
+    }
+
+    @GetMapping
+    public List<Post> findAllPost() {
+        return this.postService.findAllPost();
+    }
+
+    @PutMapping("/{id}")
+    public Post updatePost(@PathVariable Long id, @Valid @RequestBody PostDto postDto) {
+        postDto.setId(id);
+        return this.postService.updatePost(this.modelmapper.map(postDto, Post.class));
+    }
+
+    @DeleteMapping("/{id}")
+    public boolean deletePost(@PathVariable Long id) {
+        return this.postService.deletePost(id);
+    }
+
+    @GetMapping("/subjects/{subject}")
+    public List<Post> findBySubject(@PathVariable String subject) {
+        return this.postService.findBySubject(subject);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
