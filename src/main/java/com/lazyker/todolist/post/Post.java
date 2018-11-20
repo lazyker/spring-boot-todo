@@ -2,7 +2,6 @@ package com.lazyker.todolist.post;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,7 +18,6 @@ public class Post {
 
     @Temporal(TemporalType.DATE)
     private Date createdAt;
-    private boolean isSuccess;
 
     public Post(String subject, String content) {
         this.subject = subject;
